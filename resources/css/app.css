@@ -1,0 +1,218 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    body {
+        @apply antialiased;
+    }
+}
+
+@layer components {
+    .btn-primary {
+        @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-brand-600 border border-transparent rounded-xl font-semibold text-sm text-white
+               hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2
+               transition-all duration-200 ease-in-out shadow-sm hover:shadow-md active:scale-[0.98];
+    }
+
+    .btn-secondary {
+        @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white border border-gray-300 rounded-xl font-semibold text-sm text-gray-700
+               hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2
+               transition-all duration-200 ease-in-out shadow-sm hover:shadow active:scale-[0.98];
+    }
+
+    .btn-danger {
+        @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-red-600 border border-transparent rounded-xl font-semibold text-sm text-white
+               hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2
+               transition-all duration-200 ease-in-out shadow-sm hover:shadow-md active:scale-[0.98];
+    }
+
+    .btn-success {
+        @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-emerald-600 border border-transparent rounded-xl font-semibold text-sm text-white
+               hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2
+               transition-all duration-200 ease-in-out shadow-sm hover:shadow-md active:scale-[0.98];
+    }
+
+    .btn-ghost {
+        @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl font-medium text-sm text-gray-600
+               hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-300
+               transition-all duration-150 ease-in-out;
+    }
+
+    .card {
+        @apply bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden
+               transition-all duration-200 hover:shadow-md;
+    }
+
+    .card-header {
+        @apply px-6 py-4 border-b border-gray-100 bg-gray-50/50;
+    }
+
+    .card-body {
+        @apply p-6;
+    }
+
+    .card-footer {
+        @apply px-6 py-4 border-t border-gray-100 bg-gray-50/30;
+    }
+
+    .badge {
+        @apply inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold;
+    }
+
+    .badge-success {
+        @apply badge bg-emerald-100 text-emerald-700;
+    }
+
+    .badge-danger {
+        @apply badge bg-red-100 text-red-700;
+    }
+
+    .badge-info {
+        @apply badge bg-blue-100 text-blue-700;
+    }
+
+    .badge-warning {
+        @apply badge bg-amber-100 text-amber-700;
+    }
+
+    .badge-neutral {
+        @apply badge bg-gray-100 text-gray-600;
+    }
+
+    .input-field {
+        @apply block w-full rounded-xl border-gray-200 bg-gray-50/50
+               focus:border-brand-500 focus:ring-2 focus:ring-brand-200 focus:bg-white
+               transition-all duration-200 text-sm placeholder:text-gray-400;
+    }
+
+    .section-title {
+        @apply text-lg font-bold text-gray-900;
+    }
+
+    .section-subtitle {
+        @apply text-sm text-gray-500 mt-0.5;
+    }
+
+    .stat-card {
+        @apply card p-5 flex items-center gap-4 animate-slide-up;
+    }
+
+    .stat-icon {
+        @apply flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center text-xl;
+    }
+
+    .empty-state {
+        @apply flex flex-col items-center justify-center py-16 px-4 text-center;
+    }
+
+    .gradient-header {
+        @apply bg-gradient-to-br from-brand-600 via-brand-700 to-indigo-800;
+    }
+
+    .question-card {
+        @apply card border-l-4 border-l-brand-500 hover:border-l-brand-600
+               transition-all duration-200;
+    }
+
+    .question-card-text {
+        @apply border-l-brand-400;
+    }
+
+    .question-card-radio {
+        @apply border-l-amber-400;
+    }
+
+    .question-card-checkbox {
+        @apply border-l-emerald-400;
+    }
+
+    .question-card-select {
+        @apply border-l-blue-400;
+    }
+
+    .toolbar-sticky {
+        @apply sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-gray-100
+               shadow-sm;
+    }
+
+    /* Premium Form Components */
+    .form-accent-bar {
+        @apply h-2 w-full bg-gradient-to-r from-brand-500 via-brand-600 to-indigo-700 rounded-t-2xl;
+    }
+
+    .progress-container {
+        @apply fixed top-0 left-0 w-full h-1.5 bg-gray-100 z-[60] overflow-hidden;
+    }
+
+    .progress-bar-fill {
+        @apply h-full bg-brand-500 transition-all duration-500 ease-out shadow-[0_0_10px_rgba(79,70,229,0.5)];
+    }
+
+    .option-tile {
+        @apply flex items-center gap-4 px-6 py-4 rounded-2xl border-2 cursor-pointer select-none
+               transition-all duration-200 transform active:scale-[0.98];
+    }
+
+    .option-tile-off {
+        @apply border-gray-100 bg-white hover:border-brand-200 hover:bg-brand-50/30 text-gray-700 shadow-sm;
+    }
+
+    .option-tile-on {
+        @apply border-brand-500 bg-brand-50/50 text-brand-900 shadow-md ring-4 ring-brand-500/10;
+    }
+
+    .question-focus-indicator {
+        @apply absolute -left-1 top-8 bottom-8 w-1.5 bg-brand-500 rounded-full opacity-0 transition-opacity duration-300;
+    }
+
+    .card:focus-within .question-focus-indicator {
+        @apply opacity-100;
+    }
+}
+
+@layer utilities {
+    .text-balance {
+        text-wrap: balance;
+    }
+
+    .scrollbar-thin {
+        scrollbar-width: thin;
+        scrollbar-color: #e5e7eb transparent;
+    }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+}
+
+/* Livewire loading states */
+[wire\:loading] {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Smooth page transitions */
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.2s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}

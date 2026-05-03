@@ -1,0 +1,87 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: formularios_app
+    restart: unless-stopped
+    working_dir: /var/www
+    environment:
+      TZ: America/Tijuana
+    volumes:
+      - .:/var/www
+    ports:
+      - "5194:5173"
+      - "8095:8080"
+    depends_on:
+      - db
+    networks:
+      - formularios-net
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  web:
+    image: nginx:alpine
+    container_name: formularios_web
+    restart: unless-stopped
+    ports:
+      - "8096:80"
+    volumes:
+      - .:/var/www
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
+    networks:
+      - formularios-net
+
+  db:
+    image: mysql:8.0
+    container_name: formularios_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: formularios
+      MYSQL_USER: rishar
+      MYSQL_PASSWORD: secretpassword
+    ports:
+      - "3315:3306"
+    volumes:
+      - formularios_dbdata:/var/lib/mysql
+    networks:
+      - formularios-net
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: formularios_pma
+    restart: unless-stopped
+    ports:
+      - "8097:80"
+    environment:
+      PMA_HOST: db
+      PMA_ARBITRARY: 1
+    depends_on:
+      - db
+    networks:
+      - formularios-net
+
+  queue:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: formularios_queue
+    restart: unless-stopped
+    working_dir: /var/www
+    command: php artisan queue:work
+    volumes:
+      - .:/var/www
+    depends_on:
+      - db
+    networks:
+      - formularios-net
+
+networks:
+  formularios-net:
+    driver: bridge
+
+volumes:
+  formularios_dbdata:
