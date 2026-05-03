@@ -81,6 +81,7 @@
                 @foreach ($questions as $index => $question)
                     @php
                         $borderColors = [
+                            'input' => 'border-l-indigo-400',
                             'text' => 'border-l-brand-400',
                             'radio' => 'border-l-amber-400',
                             'checkbox' => 'border-l-emerald-400',
@@ -117,7 +118,8 @@
                                 </div>
                                 <div>
                                     <select wire:model.live="questions.{{ $index }}.type" class="input-field">
-                                        <option value="text">📝 Texto</option>
+                                        <option value="input">✏️ Texto Corto</option>
+                                        <option value="text">📝 Texto Largo</option>
                                         <option value="radio">🔘 Opción múltiple</option>
                                         <option value="checkbox">✅ Checkbox</option>
                                         <option value="select">📋 Selector</option>

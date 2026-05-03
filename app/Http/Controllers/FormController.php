@@ -5,9 +5,27 @@ namespace App\Http\Controllers;
 use App\Models\Form;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class FormController extends Controller
 {
+    public function exportPdf(Form $form)
+    {
+        Gate::authorize('view', $form);
+
+        // Increase limits for large PDFs
+        ini_set('memory_limit', '512M');
+        ini_set('max_execution_time', '300');
+
+        $form->load(['questions', 'responses.answers.option']);
+        $form->loadCount(['questions', 'responses']);
+
+        $pdf = Pdf::loadView('pdf.responses', compact('form'))
+            ->setPaper('a4', 'landscape');
+
+        return $pdf->download('reporte_' . $form->uuid . '.pdf');
+    }
+
     public function index()
     {
         $query = auth()->user()->isAdmin() 

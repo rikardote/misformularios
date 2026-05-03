@@ -82,7 +82,7 @@ class Builder extends Component
             'description' => ['nullable', 'string', 'max:2000'],
             'questions' => ['required', 'array', 'min:1'],
             'questions.*.question_text' => ['required', 'string', 'max:500'],
-            'questions.*.type' => ['required', 'in:text,radio,checkbox,select'],
+            'questions.*.type' => ['required', 'in:input,text,radio,checkbox,select'],
             'questions.*.is_required' => ['boolean'],
         ], [
             'title.required' => 'El título es obligatorio.',

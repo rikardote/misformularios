@@ -3,8 +3,7 @@
 use App\Livewire\Actions\Logout;
 use Livewire\Volt\Component;
 
-new class extends Component
-{
+new class extends Component {
     public function logout(Logout $logout): void
     {
         $logout();
@@ -12,13 +11,29 @@ new class extends Component
     }
 }; ?>
 
-<nav x-data="{ open: false }" class="bg-white border-b border-gray-100 sticky top-0 z-50">
+<nav x-data="{ 
+    open: false, 
+    darkMode: localStorage.getItem('theme') === 'dark',
+    toggleTheme() {
+        this.darkMode = !this.darkMode;
+        if (this.darkMode) {
+            document.documentElement.classList.add('dark');
+            localStorage.setItem('theme', 'dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+            localStorage.setItem('theme', 'light');
+        }
+    },
+    init() {
+        this.darkMode = document.documentElement.classList.contains('dark');
+    }
+}" class="bg-white dark:bg-gray-950 border-b border-gray-100 dark:border-gray-800 sticky top-0 z-50 transition-colors duration-300">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
             <div class="flex items-center gap-1">
                 <a href="{{ route('dashboard') }}" wire:navigate class="flex items-center gap-2.5 mr-8">
                     <img src="{{ asset('60issste.png') }}" alt="Logo" class="h-10 w-auto">
-                    <span class="text-lg font-extrabold text-gray-900 tracking-tight">Formularios</span>
+
                 </a>
 
                 <div class="hidden sm:flex sm:items-center sm:gap-1">
@@ -42,26 +57,40 @@ new class extends Component
                 </div>
             </div>
 
-            <div class="hidden sm:flex sm:items-center sm:gap-2">
+            <div class="hidden sm:flex sm:items-center sm:gap-4">
+                {{-- Theme Toggle --}}
+                <button @click="toggleTheme" class="p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all duration-300">
+                    <svg x-show="!darkMode" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                    <svg x-show="darkMode" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 9H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                </button>
+
                 <a href="{{ route('forms.create') }}" class="btn-primary !text-xs !py-2 !px-4">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
                     Nuevo
                 </a>
+
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
-                        <button class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors duration-150">
-                            <div class="w-7 h-7 bg-brand-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                        <button
+                            class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors duration-150">
+                            <div
+                                class="w-7 h-7 bg-brand-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
                                 {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                             </div>
                             <span class="hidden md:inline">{{ auth()->user()->name }}</span>
-                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
                         </button>
                     </x-slot>
 
                     <x-slot name="content">
-                        <div class="px-4 py-3 border-b border-gray-100">
-                            <p class="text-sm font-medium text-gray-900">{{ auth()->user()->name }}</p>
-                            <p class="text-xs text-gray-500">{{ auth()->user()->email }}</p>
+                        <div class="px-4 py-3 border-b border-gray-100 dark:border-gray-800">
+                            <p class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ auth()->user()->name }}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">{{ auth()->user()->email }}</p>
                         </div>
                         <x-dropdown-link :href="route('profile')" wire:navigate>
                             Perfil
@@ -69,7 +98,7 @@ new class extends Component
                         <button wire:click="logout" class="w-full text-start">
                             <x-dropdown-link>
                                 <span class="flex items-center gap-2 text-red-600">
-                                    Cerrar sesion
+                                    Cerrar sesión
                                 </span>
                             </x-dropdown-link>
                         </button>
@@ -78,10 +107,14 @@ new class extends Component
             </div>
 
             <div class="-me-2 flex items-center sm:hidden">
-                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-xl text-gray-400 hover:text-gray-500 hover:bg-gray-100 transition-colors">
+                <button @click="open = ! open"
+                    class="inline-flex items-center justify-center p-2 rounded-xl text-gray-400 hover:text-gray-500 hover:bg-gray-100 transition-colors">
                     <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                        <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex"
+                            stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h16" />
+                        <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round"
+                            stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
@@ -90,10 +123,13 @@ new class extends Component
 
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1 border-t border-gray-100">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" wire:navigate>🏠 Inicio</x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('forms.index')" :active="request()->routeIs('forms.*')" wire:navigate>📋 Formularios</x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" wire:navigate>🏠
+                Inicio</x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('forms.index')" :active="request()->routeIs('forms.*')" wire:navigate>📋
+                Formularios</x-responsive-nav-link>
             @if(auth()->user()->isAdmin())
-                <x-responsive-nav-link :href="route('users.index')" :active="request()->routeIs('users.*')" wire:navigate>👥 Usuarios</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('users.index')" :active="request()->routeIs('users.*')" wire:navigate>👥
+                    Usuarios</x-responsive-nav-link>
             @endif
         </div>
     </div>

@@ -53,6 +53,13 @@ class PublicForm extends Component
             return;
         }
 
+        // Rate limiting: 5 submissions per minute per IP
+        $throttleKey = 'submit-form:' . request()->ip();
+        if (cache()->has($throttleKey) && cache()->get($throttleKey) >= 5) {
+            $this->addError('submit', 'Has enviado demasiadas respuestas. Por favor, espera un minuto.');
+            return;
+        }
+
         // Honeypot — if filled, silently reject (looks like success to bot)
         if (! empty($this->website)) {
             $this->successMessage = 'Formulario enviado correctamente.';
@@ -67,13 +74,15 @@ class PublicForm extends Component
                 $rules[$key] = match ($question->type) {
                     'checkbox' => ['required', 'array', 'min:1'],
                     'radio', 'select' => ['required', 'integer', 'exists:options,id'],
-                    default => ['required', 'string', 'max:5000'],
+                    'input' => ['required', 'string', 'max:255'],
+                    default => ['required', 'string', 'max:2000'],
                 };
             } else {
                 $rules[$key] = match ($question->type) {
                     'checkbox' => ['nullable', 'array'],
                     'radio', 'select' => ['nullable', 'integer', 'exists:options,id'],
-                    default => ['nullable', 'string', 'max:5000'],
+                    'input' => ['nullable', 'string', 'max:255'],
+                    default => ['nullable', 'string', 'max:2000'],
                 };
             }
         }
@@ -100,12 +109,18 @@ class PublicForm extends Component
                     }
                 }
             } else {
+                // Sanitize input to remove HTML tags
+                $sanitizedValue = is_string($value) ? strip_tags($value) : $value;
                 $response->answers()->create([
                     'question_id' => $question->id,
-                    'answer_text' => $value,
+                    'answer_text' => $sanitizedValue,
                 ]);
             }
         }
+
+        // Increment throttle
+        $count = cache()->get($throttleKey, 0);
+        cache()->put($throttleKey, $count + 1, now()->addMinute());
 
         $this->successMessage = 'Formulario enviado correctamente.';
         $this->reset('answers');
