@@ -23,8 +23,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('forms', FormController::class);
     Route::get('forms/{form}/builder', Builder::class)->name('forms.builder');
     Route::get('forms/{form}/results', Results::class)->name('forms.results');
-    Route::get('forms/{form}/export', [FormController::class, 'export'])->name('forms.export');
-    Route::get('forms/{form}/export-pdf', [FormController::class, 'exportPdf'])->name('forms.export-pdf');
+    Route::get('forms/{form}/export-xls', [FormController::class, 'exportXls'])->name('forms.export-xls');
 
     // Admin Users Management using alias
     Route::middleware(['admin'])->group(function () {

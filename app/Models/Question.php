@@ -7,9 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['type', 'question_text', 'is_required', 'order'])]
 class Question extends Model
 {
+    protected $fillable = ['type', 'question_text', 'is_required', 'order'];
+
     protected $casts = [
         'is_required' => 'boolean',
         'order' => 'integer',

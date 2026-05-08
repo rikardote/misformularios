@@ -10,13 +10,9 @@
             </div>
             <div class="flex items-center gap-2">
                 @if ($form->responses->isNotEmpty())
-                    <a href="{{ route('forms.export', $form) }}" class="btn-secondary !text-xs !py-2" title="Exportar a Excel/CSV">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                        <span class="hidden sm:inline">CSV</span>
-                    </a>
-                    <a href="{{ route('forms.export-pdf', $form) }}" class="btn-secondary !text-xs !py-2 !text-red-600 dark:!text-red-400 !border-red-100 dark:!border-red-900/30 hover:!bg-red-50 dark:hover:!bg-red-900/20" title="Exportar a PDF">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
-                        <span class="hidden sm:inline">PDF</span>
+                    <a href="{{ route('forms.export-xls', $form) }}" class="btn-secondary !text-xs !py-2 !text-emerald-600 dark:!text-emerald-400 !border-emerald-100 dark:!border-emerald-900/30 hover:!bg-emerald-50 dark:hover:!bg-emerald-900/20" title="Exportar a Excel (XLS)">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2a4 4 0 00-4-4H5m11 6v-3a4 4 0 00-4-4h-3m14 10V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2z"/></svg>
+                        <span class="hidden sm:inline">EXCEL</span>
                     </a>
                 @endif
                 <a href="{{ route('forms.public', $form->uuid) }}" target="_blank" class="btn-primary !text-xs !py-2">
@@ -109,7 +105,7 @@
                                 </div>
 
                                 @php
-                                    $allAnswers = \App\Models\Answer::where('question_id', $question->id)->get();
+                                    $allAnswers = $question->answers;
                                     $totalAnswers = $allAnswers->count();
                                 @endphp
 
@@ -173,7 +169,7 @@
                                     </div>
 
                                     @php
-                                        $allAnswers = \App\Models\Answer::where('question_id', $question->id)->get();
+                                        $allAnswers = $question->answers;
                                         $totalAnswers = $allAnswers->count();
                                     @endphp
 
@@ -229,6 +225,7 @@
                                 <thead>
                                     <tr class="bg-gray-50/50 dark:bg-gray-900/50">
                                         <th class="sticky left-0 z-10 bg-gray-50 dark:bg-gray-900 pl-6 pr-3 py-4 text-left text-xs font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest w-16">ID</th>
+                                        <th class="px-6 py-4 text-left text-xs font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest">Código</th>
                                         @foreach ($form->questions as $question)
                                             <th class="px-6 py-4 text-left text-xs font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest min-w-[200px]">
                                                 {{ $question->question_text }}
@@ -238,10 +235,13 @@
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
-                                    @foreach ($form->responses as $response)
+                                    @foreach ($paginatedResponses as $response)
                                         <tr class="hover:bg-gray-50/30 dark:hover:bg-gray-800/30 transition-colors duration-150">
                                             <td class="sticky left-0 z-10 bg-white dark:bg-gray-950 pl-6 pr-3 py-5">
                                                 <span class="text-xs font-black text-gray-400">#{{ $response->id }}</span>
+                                            </td>
+                                            <td class="px-6 py-5">
+                                                <span class="text-xs font-black text-brand-600 dark:text-brand-400 font-mono">{{ $response->verification_code }}</span>
                                             </td>
                                             @foreach ($form->questions as $question)
                                                 <td class="px-6 py-5">
@@ -273,6 +273,11 @@
                                 </tbody>
                             </table>
                         </div>
+                        @if($paginatedResponses->hasPages())
+                            <div class="px-6 py-4 bg-gray-50 dark:bg-gray-900/50 border-t border-gray-100 dark:border-gray-800">
+                                {{ $paginatedResponses->links() }}
+                            </div>
+                        @endif
                     </div>
                 @endif
             @endif

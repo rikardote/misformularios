@@ -8,9 +8,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
-#[Fillable(['title', 'description', 'is_public'])]
 class Form extends Model
 {
+    protected $fillable = ['user_id', 'uuid', 'title', 'description', 'is_public'];
+
     protected $casts = [
         'is_public' => 'boolean',
     ];

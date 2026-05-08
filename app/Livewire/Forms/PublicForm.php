@@ -13,6 +13,8 @@ class PublicForm extends Component
 
     public string $successMessage = '';
 
+    public string $verificationCode = '';
+
     public bool $formAvailable = true;
 
     /** Honeypot field — bots fill this, humans don't */
@@ -109,8 +111,8 @@ class PublicForm extends Component
                     }
                 }
             } else {
-                // Sanitize input to remove HTML tags
-                $sanitizedValue = is_string($value) ? strip_tags($value) : $value;
+                // Sanitize input to remove HTML tags and convert to uppercase
+                $sanitizedValue = is_string($value) ? mb_strtoupper(strip_tags($value)) : $value;
                 $response->answers()->create([
                     'question_id' => $question->id,
                     'answer_text' => $sanitizedValue,
@@ -123,6 +125,7 @@ class PublicForm extends Component
         cache()->put($throttleKey, $count + 1, now()->addMinute());
 
         $this->successMessage = 'Formulario enviado correctamente.';
+        $this->verificationCode = $response->verification_code;
         $this->reset('answers');
         $this->initAnswers();
     }

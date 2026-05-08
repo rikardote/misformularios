@@ -103,8 +103,8 @@ class Builder extends Component
         }
 
         $this->form->update([
-            'title' => $this->title,
-            'description' => $this->description ?: null,
+            'title' => mb_strtoupper($this->title),
+            'description' => $this->description ? mb_strtoupper($this->description) : null,
             'is_public' => $this->isPublic,
         ]);
 
@@ -117,7 +117,7 @@ class Builder extends Component
                 ['id' => $q['id']],
                 [
                     'type' => $q['type'],
-                    'question_text' => $q['question_text'],
+                    'question_text' => mb_strtoupper($q['question_text']),
                     'is_required' => $q['is_required'],
                     'order' => $index,
                 ]
@@ -131,7 +131,7 @@ class Builder extends Component
                     if (! empty(trim($opt['option_text'] ?? ''))) {
                         $question->options()->updateOrCreate(
                             ['id' => $opt['id']],
-                            ['option_text' => $opt['option_text']]
+                            ['option_text' => mb_strtoupper($opt['option_text'])]
                         );
                     }
                 }

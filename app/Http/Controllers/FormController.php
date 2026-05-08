@@ -9,22 +9,6 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class FormController extends Controller
 {
-    public function exportPdf(Form $form)
-    {
-        Gate::authorize('view', $form);
-
-        // Increase limits for large PDFs
-        ini_set('memory_limit', '512M');
-        ini_set('max_execution_time', '300');
-
-        $form->load(['questions', 'responses.answers.option']);
-        $form->loadCount(['questions', 'responses']);
-
-        $pdf = Pdf::loadView('pdf.responses', compact('form'))
-            ->setPaper('a4', 'landscape');
-
-        return $pdf->download('reporte_' . $form->uuid . '.pdf');
-    }
 
     public function index()
     {
@@ -98,7 +82,7 @@ class FormController extends Controller
         return redirect()->route('forms.index')->with('status', 'Formulario eliminado.');
     }
 
-    public function export(Form $form)
+    public function exportXls(Form $form)
     {
         Gate::authorize('view', $form);
 
@@ -106,31 +90,91 @@ class FormController extends Controller
         $responses = $form->responses()->with('answers.option')->get();
 
         $headers = [
-            'Content-Type' => 'text/csv; charset=UTF-8',
-            'Content-Disposition' => 'attachment; filename="resultados_' . $form->uuid . '.csv"',
+            'Content-Type' => 'application/vnd.ms-excel',
+            'Content-Disposition' => 'attachment; filename="resultados_' . $form->uuid . '.xls"',
         ];
 
-        $callback = function () use ($questions, $responses) {
-            $file = fopen('php://output', 'w');
-            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF)); // BOM for Excel
+        $callback = function () use ($questions, $responses, $form) {
+            echo "<?xml version=\"1.0\"?>\n";
+            echo "<?mso-application progid=\"Excel.Sheet\"?>\n";
+            echo "<Workbook xmlns=\"urn:schemas-microsoft-com:office:spreadsheet\"\n";
+            echo " xmlns:o=\"urn:schemas-microsoft-com:office:office\"\n";
+            echo " xmlns:x=\"urn:schemas-microsoft-com:office:excel\"\n";
+            echo " xmlns:ss=\"urn:schemas-microsoft-com:office:spreadsheet\"\n";
+            echo " xmlns:html=\"http://www.w3.org/TR/REC-html40\">\n";
+            
+            echo " <Styles>\n";
+            echo "  <Style ss:ID=\"Default\" ss:Name=\"Normal\">\n";
+            echo "   <Alignment ss:Vertical=\"Bottom\"/>\n";
+            echo "   <Borders/>\n";
+            echo "   <Font ss:FontName=\"Calibri\" x:Family=\"Swiss\" ss:Size=\"11\" ss:Color=\"#000000\"/>\n";
+            echo "   <Interior/>\n";
+            echo "   <NumberFormat/>\n";
+            echo "   <Protection/>\n";
+            echo "  </Style>\n";
+            echo "  <Style ss:ID=\"sHeader\">\n";
+            echo "   <Alignment ss:Horizontal=\"Center\" ss:Vertical=\"Center\" ss:WrapText=\"1\"/>\n";
+            echo "   <Borders>\n";
+            echo "    <Border ss:Position=\"Bottom\" ss:LineStyle=\"Continuous\" ss:Weight=\"1\"/>\n";
+            echo "    <Border ss:Position=\"Left\" ss:LineStyle=\"Continuous\" ss:Weight=\"1\"/>\n";
+            echo "    <Border ss:Position=\"Right\" ss:LineStyle=\"Continuous\" ss:Weight=\"1\"/>\n";
+            echo "    <Border ss:Position=\"Top\" ss:LineStyle=\"Continuous\" ss:Weight=\"1\"/>\n";
+            echo "   </Borders>\n";
+            echo "   <Font ss:FontName=\"Calibri\" x:Family=\"Swiss\" ss:Size=\"11\" ss:Color=\"#FFFFFF\" ss:Bold=\"1\"/>\n";
+            echo "   <Interior ss:Color=\"#4F46E5\" ss:Pattern=\"Solid\"/>\n";
+            echo "  </Style>\n";
+            echo "  <Style ss:ID=\"sData\">\n";
+            echo "   <Alignment ss:Vertical=\"Center\"/>\n";
+            echo "   <Borders>\n";
+            echo "    <Border ss:Position=\"Bottom\" ss:LineStyle=\"Continuous\" ss:Weight=\"1\"/>\n";
+            echo "    <Border ss:Position=\"Left\" ss:LineStyle=\"Continuous\" ss:Weight=\"1\"/>\n";
+            echo "    <Border ss:Position=\"Right\" ss:LineStyle=\"Continuous\" ss:Weight=\"1\"/>\n";
+            echo "    <Border ss:Position=\"Top\" ss:LineStyle=\"Continuous\" ss:Weight=\"1\"/>\n";
+            echo "   </Borders>\n";
+            echo "  </Style>\n";
+            echo " </Styles>\n";
 
-            $headerRow = ['ID Respuesta', 'Fecha'];
-            foreach ($questions as $question) {
-                $headerRow[] = $question->question_text;
+            echo " <Worksheet ss:Name=\"Resultados\">\n";
+            echo "  <Table ss:ExpandedColumnCount=\"" . ($questions->count() + 3) . "\" ss:ExpandedRowCount=\"" . ($responses->count() + 1) . "\" x:FullColumns=\"1\" x:FullRows=\"1\" ss:DefaultColumnWidth=\"100\">\n";
+            
+            // Column widths
+            echo "   <Column ss:AutoFitWidth=\"0\" ss:Width=\"80\"/>\n"; // ID
+            echo "   <Column ss:AutoFitWidth=\"0\" ss:Width=\"120\"/>\n"; // Verification Code
+            echo "   <Column ss:AutoFitWidth=\"0\" ss:Width=\"120\"/>\n"; // Date
+            foreach ($questions as $q) {
+                echo "   <Column ss:AutoFitWidth=\"0\" ss:Width=\"200\"/>\n";
             }
-            fputcsv($file, $headerRow);
 
+            // Header
+            echo "   <Row ss:AutoFitHeight=\"0\" ss:Height=\"35\">\n";
+            echo "    <Cell ss:StyleID=\"sHeader\"><Data ss:Type=\"String\">ID RESPUESTA</Data></Cell>\n";
+            echo "    <Cell ss:StyleID=\"sHeader\"><Data ss:Type=\"String\">CODIGO VERIFICACION</Data></Cell>\n";
+            echo "    <Cell ss:StyleID=\"sHeader\"><Data ss:Type=\"String\">FECHA ENVIO</Data></Cell>\n";
+            foreach ($questions as $question) {
+                echo "    <Cell ss:StyleID=\"sHeader\"><Data ss:Type=\"String\">" . htmlspecialchars(mb_strtoupper($question->question_text)) . "</Data></Cell>\n";
+            }
+            echo "   </Row>\n";
+
+            // Data
             foreach ($responses as $response) {
-                $row = [$response->id, $response->created_at->format('Y-m-d H:i:s')];
+                echo "   <Row ss:AutoFitHeight=\"1\">\n";
+                echo "    <Cell ss:StyleID=\"sData\"><Data ss:Type=\"Number\">" . $response->id . "</Data></Cell>\n";
+                echo "    <Cell ss:StyleID=\"sData\"><Data ss:Type=\"String\">" . $response->verification_code . "</Data></Cell>\n";
+                echo "    <Cell ss:StyleID=\"sData\"><Data ss:Type=\"String\">" . $response->created_at->format('d/m/Y H:i:s') . "</Data></Cell>\n";
                 foreach ($questions as $question) {
                     $answers = $response->answers->where('question_id', $question->id);
-                    $row[] = $answers->map(fn($a) => $a->option ? $a->option->option_text : $a->answer_text)->implode(', ');
+                    $text = $answers->map(fn($a) => $a->option ? $a->option->option_text : $a->answer_text)->implode(', ');
+                    echo "    <Cell ss:StyleID=\"sData\"><Data ss:Type=\"String\">" . htmlspecialchars(mb_strtoupper($text)) . "</Data></Cell>\n";
                 }
-                fputcsv($file, $row);
+                echo "   </Row>\n";
             }
-            fclose($file);
+
+            echo "  </Table>\n";
+            echo " </Worksheet>\n";
+            echo "</Workbook>\n";
         };
 
-        return response()->streamDownload($callback, 'resultados_' . $form->uuid . '.csv', $headers);
+        return response()->streamDownload($callback, 'resultados_' . $form->uuid . '.xls', $headers);
     }
+
 }

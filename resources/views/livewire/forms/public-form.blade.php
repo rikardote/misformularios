@@ -58,12 +58,21 @@
                         </svg>
                     </div>
                     <h2 class="text-4xl font-black text-gray-900 mb-4 tracking-tight">{{ $successMessage }}</h2>
-                    <p class="text-xl text-gray-500 font-medium">¡Gracias por tu participación! Tus respuestas han sido
-                        registradas.</p>
+                    <p class="text-xl text-gray-500 font-medium">¡Gracias por tu participación! Tus respuestas han sido registradas.</p>
+                    
+                    @if($verificationCode)
+                        <div class="mt-8 p-6 bg-brand-50 border-2 border-brand-100 rounded-3xl animate-slide-up">
+                            <p class="text-sm font-bold text-brand-600 uppercase tracking-widest mb-2">Código de Verificación</p>
+                            <div class="flex items-center justify-center gap-3">
+                                <span class="text-3xl font-black text-brand-900 tracking-widest font-mono">{{ $verificationCode }}</span>
+                            </div>
+                            <p class="text-xs text-brand-400 mt-2">Guarda este código para confirmar tu participación.</p>
+                        </div>
+                    @endif
                     <div class="mt-12 pt-10 border-t border-gray-100">
                         <p class="text-sm text-gray-400 mb-6">¿Quieres crear tu propio formulario?</p>
                         <a href="{{ route('register') }}" class="btn-primary px-8 py-4" wire:navigate>
-                            Comenzar gratis
+                            Comenzar
                         </a>
                     </div>
                 </div>

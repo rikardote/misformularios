@@ -1,8 +1,6 @@
 services:
   app:
-    build:
-      context: .
-      dockerfile: docker/php/Dockerfile
+    image: misformularios-app
     container_name: formularios_app
     restart: unless-stopped
     working_dir: /var/www
@@ -65,9 +63,7 @@ services:
       - formularios-net
 
   queue:
-    build:
-      context: .
-      dockerfile: docker/php/Dockerfile
+    image: misformularios-app
     container_name: formularios_queue
     restart: unless-stopped
     working_dir: /var/www
