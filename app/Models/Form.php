@@ -10,17 +10,48 @@ use Illuminate\Support\Str;
 
 class Form extends Model
 {
-    protected $fillable = ['user_id', 'uuid', 'title', 'description', 'is_public'];
+    protected $fillable = [
+        'user_id',
+        'uuid',
+        'slug',
+        'title',
+        'description',
+        'is_public'
+    ];
 
     protected $casts = [
         'is_public' => 'boolean',
     ];
 
-    protected static function booted(): void
+    protected static function booted()
     {
-        static::creating(function (Form $form) {
-            $form->uuid = (string) Str::uuid();
+        static::creating(function ($form) {
+            if (!$form->uuid) {
+                $form->uuid = (string) \Illuminate\Support\Str::uuid();
+            }
+            if (!$form->slug) {
+                $form->generateUniqueSlug();
+            }
         });
+
+        static::updating(function ($form) {
+            if ($form->isDirty('title')) {
+                $form->generateUniqueSlug();
+            }
+        });
+    }
+
+    public function generateUniqueSlug()
+    {
+        $baseSlug = \Illuminate\Support\Str::slug($this->title);
+        $slug = strtoupper($baseSlug);
+        $count = 1;
+
+        while (static::where('slug', $slug)->where('id', '!=', $this->id)->exists()) {
+            $slug = strtoupper($baseSlug) . '-' . $count++;
+        }
+
+        $this->slug = $slug;
     }
 
     public function user(): BelongsTo

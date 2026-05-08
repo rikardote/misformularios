@@ -31,7 +31,7 @@ Route::middleware(['auth'])->group(function () {
     });
 });
 
-Route::get('f/{uuid}', PublicForm::class)
+Route::get('f/{slug}', PublicForm::class)
     ->name('forms.public');
 
 require __DIR__.'/auth.php';

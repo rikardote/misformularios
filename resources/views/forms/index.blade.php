@@ -111,7 +111,7 @@
                                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2a4 4 0 00-4-4H5m11 6v-3a4 4 0 00-4-4h-3m14 10V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2z"/></svg>
                                                     </a>
                                                 @endif
-                                                <a href="{{ route('forms.public', $form->uuid) }}" target="_blank" class="btn-ghost !text-xs !py-1.5 !px-3" title="Ver publico">
+                                                <a href="{{ route('forms.public', $form->slug) }}" target="_blank" class="btn-ghost !text-xs !py-1.5 !px-3" title="Ver publico">
                                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                                                 </a>
                                                 <form action="{{ route('forms.destroy', $form) }}" method="POST" class="inline">

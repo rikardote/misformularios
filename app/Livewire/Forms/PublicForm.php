@@ -20,9 +20,9 @@ class PublicForm extends Component
     /** Honeypot field — bots fill this, humans don't */
     public string $website = '';
 
-    public function mount(string $uuid): void
+    public function mount($slug): void
     {
-        $this->form = Form::where('uuid', $uuid)
+        $this->form = Form::where('slug', $slug)
             ->with('questions.options')
             ->first();
 

@@ -107,12 +107,12 @@
                         <div class="card-body space-y-4">
                             <h3 class="text-sm font-semibold text-gray-700">Enlace público</h3>
                             <div class="flex items-center gap-2 p-3 bg-gray-50 rounded-xl">
-                                <code id="public-url" class="text-xs text-gray-600 break-all flex-1">{{ route('forms.public', $form->uuid) }}</code>
+                                <code id="public-url" class="text-xs text-gray-600 break-all flex-1">{{ route('forms.public', $form->slug) }}</code>
                             </div>
                             <div class="grid grid-cols-2 gap-2" x-data="{ 
                                 copied: false,
                                 copyToClipboard() {
-                                    const url = '{{ route('forms.public', $form->uuid) }}';
+                                    const url = '{{ route('forms.public', $form->slug) }}';
                                     if (navigator.clipboard && window.isSecureContext) {
                                         navigator.clipboard.writeText(url).then(() => {
                                             this.copied = true;
