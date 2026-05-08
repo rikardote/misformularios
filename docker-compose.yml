@@ -33,8 +33,10 @@ services:
       - formularios-net
 
   db:
-    image: mysql:8.0
+    image: mariadb:10.11
     container_name: formularios_db
+    security_opt:
+      - seccomp:unconfined
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: root

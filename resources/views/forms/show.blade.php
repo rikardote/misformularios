@@ -109,9 +109,34 @@
                             <div class="flex items-center gap-2 p-3 bg-gray-50 rounded-xl">
                                 <code id="public-url" class="text-xs text-gray-600 break-all flex-1">{{ route('forms.public', $form->uuid) }}</code>
                             </div>
-                            <div class="grid grid-cols-2 gap-2">
+                            <div class="grid grid-cols-2 gap-2" x-data="{ 
+                                copied: false,
+                                copyToClipboard() {
+                                    const url = '{{ route('forms.public', $form->uuid) }}';
+                                    if (navigator.clipboard && window.isSecureContext) {
+                                        navigator.clipboard.writeText(url).then(() => {
+                                            this.copied = true;
+                                            setTimeout(() => this.copied = false, 2000);
+                                        });
+                                    } else {
+                                        // Fallback for non-HTTPS
+                                        const textArea = document.createElement('textarea');
+                                        textArea.value = url;
+                                        document.body.appendChild(textArea);
+                                        textArea.select();
+                                        try {
+                                            document.execCommand('copy');
+                                            this.copied = true;
+                                            setTimeout(() => this.copied = false, 2000);
+                                        } catch (err) {
+                                            console.error('Error al copiar', err);
+                                        }
+                                        document.body.removeChild(textArea);
+                                    }
+                                }
+                            }">
                                 <button type="button"
-                                        @click="navigator.clipboard.writeText('{{ route('forms.public', $form->uuid) }}'); copied = true; setTimeout(() => copied = false, 2000)"
+                                        @click="copyToClipboard"
                                         class="btn-secondary !text-xs w-full justify-center">
                                     <template x-if="!copied">
                                         <span class="flex items-center gap-1.5">
