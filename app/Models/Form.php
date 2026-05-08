@@ -44,11 +44,11 @@ class Form extends Model
     public function generateUniqueSlug()
     {
         $baseSlug = \Illuminate\Support\Str::slug($this->title);
-        $slug = strtoupper($baseSlug);
+        $slug = $baseSlug;
         $count = 1;
 
         while (static::where('slug', $slug)->where('id', '!=', $this->id)->exists()) {
-            $slug = strtoupper($baseSlug) . '-' . $count++;
+            $slug = $baseSlug . '-' . $count++;
         }
 
         $this->slug = $slug;

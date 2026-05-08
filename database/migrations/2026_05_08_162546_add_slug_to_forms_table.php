@@ -26,7 +26,7 @@ return new class extends Migration
                 $slug = $baseSlug . '-' . $count++;
             }
             
-            $form->update(['slug' => strtoupper($slug)]);
+            $form->update(['slug' => $slug]);
         }
     }
 
