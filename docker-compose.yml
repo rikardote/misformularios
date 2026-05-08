@@ -1,8 +1,6 @@
 services:
   app:
-    build:
-      context: .
-      dockerfile: docker/php/Dockerfile
+    image: misformularios-app
     container_name: formularios_app
     security_opt:
       - seccomp:unconfined
