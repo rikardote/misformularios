@@ -135,6 +135,16 @@
                                                 CORTO</div>
                                         </div>
 
+                                    @elseif ($question->type === 'email')
+                                        <div class="relative group">
+                                            <input type="email" wire:model.live="answers.question_{{ $question->id }}"
+                                                class="block w-full rounded-2xl border-2 border-gray-100 bg-gray-50/30 px-6 py-5 text-lg
+                                                                         focus:border-brand-500 focus:ring-4 focus:ring-brand-500/5 focus:bg-white
+                                                                         transition-all duration-300 placeholder:text-gray-400" placeholder="ejemplo@correo.com">
+                                            <div
+                                                class="absolute inset-y-0 right-6 flex items-center text-xs font-bold text-gray-300 pointer-events-none group-focus-within:text-brand-400">
+                                                EMAIL</div>
+                                        </div>
                                     @elseif ($question->type === 'text')
                                         <div class="relative group">
                                             <textarea wire:model.live="answers.question_{{ $question->id }}" rows="4"

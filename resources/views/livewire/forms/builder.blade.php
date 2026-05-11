@@ -82,6 +82,7 @@
                     @php
                         $borderColors = [
                             'input' => 'border-l-indigo-400',
+                            'email' => 'border-l-rose-400',
                             'text' => 'border-l-brand-400',
                             'radio' => 'border-l-amber-400',
                             'checkbox' => 'border-l-emerald-400',
@@ -119,6 +120,7 @@
                                 <div>
                                     <select wire:model.live="questions.{{ $index }}.type" class="input-field">
                                         <option value="input">✏️ Texto Corto</option>
+                                        <option value="email">📧 Correo Electrónico</option>
                                         <option value="text">📝 Texto Largo</option>
                                         <option value="radio">🔘 Opción múltiple</option>
                                         <option value="checkbox">✅ Checkbox</option>

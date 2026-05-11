@@ -77,6 +77,7 @@ class PublicForm extends Component
                     'checkbox' => ['required', 'array', 'min:1'],
                     'radio', 'select' => ['required', 'integer', 'exists:options,id'],
                     'input' => ['required', 'string', 'max:255'],
+                    'email' => ['required', 'email', 'max:255'],
                     default => ['required', 'string', 'max:2000'],
                 };
             } else {
@@ -84,6 +85,7 @@ class PublicForm extends Component
                     'checkbox' => ['nullable', 'array'],
                     'radio', 'select' => ['nullable', 'integer', 'exists:options,id'],
                     'input' => ['nullable', 'string', 'max:255'],
+                    'email' => ['nullable', 'email', 'max:255'],
                     default => ['nullable', 'string', 'max:2000'],
                 };
             }
@@ -111,8 +113,15 @@ class PublicForm extends Component
                     }
                 }
             } else {
-                // Sanitize input to remove HTML tags and convert to uppercase
-                $sanitizedValue = is_string($value) ? mb_strtoupper(strip_tags($value)) : $value;
+                // Sanitize input to remove HTML tags
+                $sanitizedValue = is_string($value) ? strip_tags($value) : $value;
+                
+                if ($question->type === 'email') {
+                    $sanitizedValue = mb_strtolower($sanitizedValue);
+                } else {
+                    $sanitizedValue = is_string($sanitizedValue) ? mb_strtoupper($sanitizedValue) : $sanitizedValue;
+                }
+
                 $response->answers()->create([
                     'question_id' => $question->id,
                     'answer_text' => $sanitizedValue,
