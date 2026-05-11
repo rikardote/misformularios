@@ -47,6 +47,13 @@ class PublicForm extends Component
         } else {
             $this->answers[$key][] = $optionId;
         }
+
+        $this->validateOnly("answers.{$key}", $this->getRules());
+    }
+
+    public function updated($propertyName): void
+    {
+        $this->validateOnly($propertyName, $this->getRules());
     }
 
     public function submit(): void
@@ -68,30 +75,7 @@ class PublicForm extends Component
             return;
         }
 
-        $rules = [];
-        foreach ($this->form->questions as $question) {
-            $key = "answers.question_{$question->id}";
-
-            if ($question->is_required) {
-                $rules[$key] = match ($question->type) {
-                    'checkbox' => ['required', 'array', 'min:1'],
-                    'radio', 'select' => ['required', 'integer', 'exists:options,id'],
-                    'input' => ['required', 'string', 'max:255'],
-                    'email' => ['required', 'email', 'max:255'],
-                    default => ['required', 'string', 'max:2000'],
-                };
-            } else {
-                $rules[$key] = match ($question->type) {
-                    'checkbox' => ['nullable', 'array'],
-                    'radio', 'select' => ['nullable', 'integer', 'exists:options,id'],
-                    'input' => ['nullable', 'string', 'max:255'],
-                    'email' => ['nullable', 'email', 'max:255'],
-                    default => ['nullable', 'string', 'max:2000'],
-                };
-            }
-        }
-
-        $this->validate($rules);
+        $this->validate($this->getRules());
 
         $response = $this->form->responses()->create();
 
@@ -137,6 +121,37 @@ class PublicForm extends Component
         $this->verificationCode = $response->verification_code;
         $this->reset('answers');
         $this->initAnswers();
+    }
+
+    private function getRules(): array
+    {
+        if (! $this->form) {
+            return [];
+        }
+
+        $rules = [];
+        foreach ($this->form->questions as $question) {
+            $key = "answers.question_{$question->id}";
+
+            if ($question->is_required) {
+                $rules[$key] = match ($question->type) {
+                    'checkbox' => ['required', 'array', 'min:1'],
+                    'radio', 'select' => ['required', 'integer', 'exists:options,id'],
+                    'input' => ['required', 'string', 'max:255'],
+                    'email' => ['required', 'email', 'max:255'],
+                    default => ['required', 'string', 'max:2000'],
+                };
+            } else {
+                $rules[$key] = match ($question->type) {
+                    'checkbox' => ['nullable', 'array'],
+                    'radio', 'select' => ['nullable', 'integer', 'exists:options,id'],
+                    'input' => ['nullable', 'string', 'max:255'],
+                    'email' => ['nullable', 'email', 'max:255'],
+                    default => ['nullable', 'string', 'max:2000'],
+                };
+            }
+        }
+        return $rules;
     }
 
     private function initAnswers(): void
