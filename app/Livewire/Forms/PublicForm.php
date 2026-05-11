@@ -123,7 +123,7 @@ class PublicForm extends Component
         $this->initAnswers();
     }
 
-    private function getRules(): array
+    public function getRules(): array
     {
         if (! $this->form) {
             return [];
